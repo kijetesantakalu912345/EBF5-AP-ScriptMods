@@ -413,7 +413,7 @@ package com.worlize.websocket
 				frame.rsv1 = frame.rsv2 = frame.rsv3 = frame.mask = false;
 				frame.fin = true;
 				frame.opcode = WebSocketOpcode.CONNECTION_CLOSE;
-				frame.closeStatus = WebSocketCloseStatus.NORMAL;
+				frame.closeStatus = 1000;
 				var buffer:ByteArray = new ByteArray();
 				frame.mask = true;
 				frame.send(buffer);
@@ -470,11 +470,11 @@ package com.worlize.websocket
 			// if more data is needed.
 			while (socket.connected && currentFrame.addData(socket, fragmentationOpcode, config) && !fatalError) {
 				if (currentFrame.protocolError) {
-					drop(WebSocketCloseStatus.PROTOCOL_ERROR, currentFrame.dropReason);
+					drop(1002, currentFrame.dropReason);
 					return;
 				}
 				else if (currentFrame.frameTooLarge) {
-					drop(WebSocketCloseStatus.MESSAGE_TOO_LARGE, currentFrame.dropReason);
+					drop(1009, currentFrame.dropReason);
 					return;
 				}
 				if (!config.assembleFragments) {
@@ -493,7 +493,7 @@ package com.worlize.websocket
 			var currentFrame:WebSocketFrame;
 			
 			if (frame.rsv1 || frame.rsv2 || frame.rsv3) {
-				drop(WebSocketCloseStatus.PROTOCOL_ERROR,
+				drop(1002,
 					 "Received frame with reserved bit set without a negotiated extension.");
 				return;
 			}
@@ -516,7 +516,7 @@ package com.worlize.websocket
 							}
 						}
 						else {
-							drop(WebSocketCloseStatus.PROTOCOL_ERROR,
+							drop(1002,
 								 "Illegal BINARY_FRAME received in the middle of a fragmented message.  Expected a continuation or control frame.");
 							return;
 						}						
@@ -539,7 +539,7 @@ package com.worlize.websocket
 							}
 						}
 						else {
-							drop(WebSocketCloseStatus.PROTOCOL_ERROR,
+							drop(1002,
 								 "Illegal TEXT_FRAME received in the middle of a fragmented message.  Expected a continuation or control frame.");
 							return;
 						}
@@ -550,7 +550,7 @@ package com.worlize.websocket
 						if (fragmentationOpcode === WebSocketOpcode.CONTINUATION &&
 							frame.opcode        === WebSocketOpcode.CONTINUATION)
 						{
-							drop(WebSocketCloseStatus.PROTOCOL_ERROR,
+							drop(1002,
 									"Unexpected continuation frame.");
 							return;
 						}
@@ -558,7 +558,7 @@ package com.worlize.websocket
 						fragmentationSize += frame.length;
 						
 						if (fragmentationSize > config.maxMessageSize) {
-							drop(WebSocketCloseStatus.MESSAGE_TOO_LARGE, "Maximum message size exceeded.");
+							drop(1009, "Maximum message size exceeded.");
 							return;
 						}
 						
@@ -577,7 +577,7 @@ package com.worlize.websocket
 								totalLength += frameQueue[i].length;
 							}
 							if (totalLength > config.maxMessageSize) {
-								drop(WebSocketCloseStatus.MESSAGE_TOO_LARGE,
+								drop(1009,
 									"Message size of " + totalLength +
 									" bytes exceeds maximum accepted message size of " +
 									config.maxMessageSize + " bytes.");
@@ -603,7 +603,7 @@ package com.worlize.websocket
 									event.message.utf8Data = binaryData.readMultiByte(binaryData.length, 'utf-8');
 									break;
 								default:
-									drop(WebSocketCloseStatus.PROTOCOL_ERROR,
+									drop(1002,
 										 "Unexpected first opcode in fragmentation sequence: 0x" + messageOpcode.toString(16));
 									return;
 							}
@@ -657,7 +657,7 @@ package com.worlize.websocket
 					if (debug) {
 						logger("Unrecognized Opcode: 0x" + frame.opcode.toString(16));
 					}
-					drop(WebSocketCloseStatus.PROTOCOL_ERROR, "Unrecognized Opcode: 0x" + frame.opcode.toString(16));
+					drop(1002, "Unrecognized Opcode: 0x" + frame.opcode.toString(16));
 					break;
 			}
 		}
@@ -748,7 +748,7 @@ package com.worlize.websocket
 			dispatchEvent(event);
 		}
 		
-		private function drop(closeReason:uint = WebSocketCloseStatus.PROTOCOL_ERROR, reasonText:String = null):void {
+		private function drop(closeReason:uint = 1002, reasonText:String = null):void {
 			if (!connected) {
 				return;
 			}
@@ -761,7 +761,7 @@ package com.worlize.websocket
 			
 			frameQueue = new Vector.<WebSocketFrame>();
 			fragmentationSize = 0;
-			if (closeReason !== WebSocketCloseStatus.NORMAL) {
+			if (closeReason !== 1000) {
 				var errorEvent:WebSocketErrorEvent = new WebSocketErrorEvent(WebSocketErrorEvent.ABNORMAL_CLOSE);
 				errorEvent.text = "Close reason: " + closeReason;
 				dispatchEvent(errorEvent);
@@ -771,7 +771,7 @@ package com.worlize.websocket
 			socket.close();				
 		}
 		
-		private function sendCloseFrame(reasonCode:uint = WebSocketCloseStatus.NORMAL, reasonText:String = null, force:Boolean = false):void {
+		private function sendCloseFrame(reasonCode:uint = 1000, reasonText:String = null, force:Boolean = false):void {
 			var frame:WebSocketFrame = new WebSocketFrame();
 			frame.fin = true;
 			frame.opcode = WebSocketOpcode.CONNECTION_CLOSE;

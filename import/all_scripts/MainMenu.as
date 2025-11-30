@@ -4,6 +4,7 @@ package
    import flash.display.SimpleButton;
    import flash.events.*;
    import flash.text.TextField;
+   import flash.net.Socket;
    
    [Embed(source="/_assets/assets.swf", symbol="symbol2947")]
    public class MainMenu extends MovieClip
@@ -101,6 +102,8 @@ package
       public var t8:TextField;
       
       public var t9:TextField;
+
+      public var APClientSocket:Socket;
       
       public function MainMenu()
       {
@@ -172,10 +175,32 @@ package
             }
          }
       }
+
+      public function connectHandler(event:Event)
+      {
+         trace("connected!");
+         writeUTFBytes("if you can see this, the APClientSocket has successfully sent a message to the server! yay!\n");
+         flush();
+      }
       
       internal function frame1() : *
       {
          stop();
+         stage.addEventListener(KeyboardEvent.KEY_DOWN,function(param1:KeyboardEvent:*)
+         {
+            trace("106 == the multiply key");
+            if(param1.keyCode == 106)
+            {
+               // attempt to connect a client socket to a server socket on localhost
+               // OK, in theory now i just need to import this into the game and then test it with a server running on localhost.
+               if(APClientSocket.connected)
+               {
+                  APClientSocket.close();
+               }
+               APClientSocket.connect("localhost", 8000)
+               addEventListener(Event.CONNECT, connectHandler);
+            }
+         });
          this.b1.addEventListener(MouseEvent.MOUSE_DOWN,function(param1:MouseEvent):*
          {
             MainMenu.loadFile = 0;
