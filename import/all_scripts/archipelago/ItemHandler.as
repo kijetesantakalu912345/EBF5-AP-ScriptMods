@@ -6,6 +6,11 @@ package archipelago
         public var receivedItemsIndex:Array = [];
         public var otherWorldItems:Array = []; // Keep definitions for new items in here (eg. Ultima Weapon)
 
+        public function socketCommunicationTest()
+        {
+
+        }
+
         public function ItemHandler()
         {
             this.apItem = Items.APiconEbf5SVG;

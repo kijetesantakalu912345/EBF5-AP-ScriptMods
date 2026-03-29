@@ -1,3 +1,6 @@
+// DON'T RECOMPILE THIS SCRIPT! UNTIL I MERGE NEWER JPEXS COMMITS, THE NEW SCRIPT IMPORT FORK IS ON A VERSION OF JPEXS THAT BREAKS THE SWF IF THIS IS RECOMPILED!
+// (^ it'll show the error "ReferenceError: Error #1065: Variable Main is not defined." if you have debug flash player)
+// i guess i'll just do this in MainMenu for now
 package
 {
    import com.newgrounds.*;
@@ -7,9 +10,12 @@ package
    import flash.system.*;
    import flash.utils.*;
    import text.*;
-   
+   //import archipelago.*;
+
    public class Main extends MovieClip
    {
+      //public static var debugLogAP:archipelago.APDebugLogger;
+
       public static var kongregate:*;
       
       public static var armorQuests:*;
@@ -936,6 +942,9 @@ package
             this.timer.start();
             Medals.resendMedals();
          }
+         /*debugLogAP = new APDebugLogger();
+         addChild(debugLogAP);
+         debugLogAP.initTextField()*/
       }
       
       public function enterFrameHandler(param1:Event = null) : *
@@ -1043,6 +1052,8 @@ package
          this.temp = Options.idlePlayers;
          Options.idlePlayers = false;
          BattlesAlt.calculateFoeLevels();
+         // AP debug connection stuff
+         //debugLogAP.print("hello!");
       }
    }
 }
