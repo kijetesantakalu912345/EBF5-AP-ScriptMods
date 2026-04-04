@@ -941,7 +941,7 @@ package
          }
          debugLogAP = new APDebugLogger();
          stage.addChild(debugLogAP);
-         debugLogAP.initTextField()
+         debugLogAP.initTextField();
       }
       
       public function enterFrameHandler(param1:Event = null) : *
