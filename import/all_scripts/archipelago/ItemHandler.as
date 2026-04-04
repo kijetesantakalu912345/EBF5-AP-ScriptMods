@@ -1,12 +1,12 @@
 package archipelago
 {
-    public class ItemHandler
+    public class ItemHandler implements IUTF8MessageRecivedHandler
     {
         public var apItem:Item;
         public var receivedItemsIndex:Array = [];
         public var otherWorldItems:Array = []; // Keep definitions for new items in here (eg. Ultima Weapon)
 
-        public function socketCommunicationTest()
+        public function onUTF8MessageReceived(receivedString:String):void // IE when we get an archipelago protocol packet
         {
 
         }
@@ -17,7 +17,7 @@ package archipelago
         }
 
         // Create Objects with details of items from other worlds so the player can view what they're sending.
-        public function PopulateOtherWorldItemList()
+        public function populateOtherWorldItemList()
         {
             // Example new item creation
             otherWorldItems.push(new Item({
@@ -30,7 +30,7 @@ package archipelago
             }))
         }
 
-        public function ReceiveArchipelagoItem()
+        public function receiveArchipelagoItem()
         {
             // Requirements:
             // - Incoming items do NOT require sending player or location data
@@ -43,7 +43,7 @@ package archipelago
             return;
         }
 
-        public function SendArchipelagoItem()
+        public function sendArchipelagoItem()
         {
             return;
         }
