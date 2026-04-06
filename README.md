@@ -14,7 +14,8 @@ the patch to their own copy of a vanila ebf5 v2.1.4 swf to continue contributing
 - New scripts should be added to the `./import/scripts/` and `./import/all_scripts/` folders.
 - Using the [FFDEC with new script import](https://github.com/kijetesantakalu912345/jpexs-decompiler) fork, you can import new scripts directly into the SWF<br>
 without needing to make a new .xdelta or having to create every class in FFDEC before importing them.<br>
-Using it for this project is highly recommended.
+  - When it asks you what tag to use, just press ok with the default tag selected for you.<br>
+  For technical reasons we're adding our scripts to the first DoABC2 tag.
 - For the ActionScript & MXML extension: `asconfig.json` has been gitignored.<br>
 if you want to use it (for more than just syntax highlighting to be enabled),<br>
 rename `_asconfig.json` to `asconfig.json`. If you would prefer a lighter weight set up,<br>
