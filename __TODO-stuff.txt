@@ -1,5 +1,0 @@
-1. <strikethrough>update the all_scripts folder</strikethrough> this will be done in a little bit but first i need to determine if we're gonna just go with standard TCP sockets instead of websocket.
-2. commit note: replaced all usages of WebSocketCloseStatus's const vars
-   with their actual int values. This is a hard compiler issue to fix and
-   easy to work around.
-    
