@@ -28,7 +28,7 @@ Make sure not to accidentially delete `_asconfig.json` from the repo.
 2. With JPEXS, import scripts from `./import/`. This will automatically import scripts from `./import/scripts/`.<br>
 
 ### Style guide
-This project uses the default formatting settings included with JPEXS (at least for decompiled scripts). IE:<br>
+This project uses the default formatting settings included with JPEXS. IE:<br>
 - `Characters per indent` = 3
 - `Curly brace on new line` = true
 - `Tab size` = 3
