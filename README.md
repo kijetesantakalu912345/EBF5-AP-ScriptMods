@@ -3,7 +3,7 @@ Repo for the ebf5 archipelago mod.
 
 ## Contributing notes
 - This project uses JPEXS free flash decompiler.
-- scripts are in the `./import/` folder.
+- Scripts are in the `./import/` folder.
 - Due to compiler issues, only modified scripts are put into the `./import/scripts/` folder.<br>
 reimport `./import/` with JPEXS or copy paste modified scripts into JPEXS when you want to apply changes.<br>
 - Most assets can't easily be imported/exported with JPEXS because sprites can only be imported as gif,<br>
@@ -11,12 +11,15 @@ and most asset types need to be contained in sprites. If you need to add an asse
 create a new `ebf5-AP.xdelta` patch with the imported asset/changed sprite (and ideally all scripts up to date)<br>
 for a vanila ebf5 v2.1.4 swf, and include it with your commit. Other contributors will need to apply<br>
 the patch to their own copy of a vanila ebf5 v2.1.4 swf to continue contributing.
-  * you also need to do this for new scripts. JPEXS's import scripts button only imports existing scripts.<br>
-  don't forget to add it to the `./import/scripts/` and `./import/all_scripts/` folders.
-- for the ActionScript & MXML extension: `asconfig.json` has been gitignored.<br>
+- New scripts should be added to the `./import/scripts/` and `./import/all_scripts/` folders.
+- Using the [FFDEC with new script import](https://github.com/kijetesantakalu912345/jpexs-decompiler) fork, you can import new scripts directly into the SWF<br>
+without needing to make a new .xdelta or having to create every class in FFDEC before importing them.<br>
+Using it for this project is highly recommended.
+- For the ActionScript & MXML extension: `asconfig.json` has been gitignored.<br>
 if you want to use it (for more than just syntax highlighting to be enabled),<br>
 rename `_asconfig.json` to `asconfig.json`. If you would prefer a lighter weight set up,<br>
 you can use "ActionScript & MXML without" renaming `_asconfig.json` and "AS2 Language Support".<br>
+Make sure not to accidentially delete `_asconfig.json` from the repo.
 - `/import/all_scripts/` and `/import/scripts/` should have all modified scripts up to date at all times.<br>
 
 ### Getting an up to date swf
