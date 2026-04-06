@@ -2,7 +2,7 @@
 Repo for the ebf5 archipelago mod.
 
 ## Contributing notes
-- This project uses JPEXS free flash decompiler.
+- This project uses JPEXS free flash decompiler (aka FFDEC).
 - Scripts are in the `./import/` folder.
 - Due to compiler issues, only modified scripts are put into the `./import/scripts/` folder.<br>
 reimport `./import/` with JPEXS or copy paste modified scripts into JPEXS when you want to apply changes.<br>
