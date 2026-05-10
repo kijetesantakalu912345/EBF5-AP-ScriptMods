@@ -9,13 +9,12 @@ package archipelago
    public class APSocket extends Socket implements IUTF8MessageRecivedHandler
    {
       /**
-       * Called when we finish receiving a message, like after fully reconstructing an archipelago protocol packet that may have been cut into many TCP packets.
-       */
+       * Called when a TCP message from Archipelago is received.
+      */
       public var onUTF8MessageReceivedCallbackHandler:IUTF8MessageRecivedHandler;
 
       public var isWaitingForNewMessage:Boolean = true;
       public var currentMessageFinalLength:uint = 0;
-      // i want to just use a string but then i'd need to copy it to a byte array and waste a ton of memory every time which would be slow
       public var currentReceivedMessageFragments:ByteArray = new ByteArray();
 
       // 4999 is just some random port number that according to wikipedia's list of TCP and UDP port numbers doesn't seem to have much usage.
@@ -26,7 +25,7 @@ package archipelago
          onUTF8MessageReceivedCallbackHandler = this;
          addEventListener(Event.CLOSE, closeHandler);
          addEventListener(Event.CONNECT, connectHandler);
-         // addEventListener(IOErrorEvent.IO_ERROR, );
+         //addEventListener(IOErrorEvent.IO_ERROR, );
          addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
          addEventListener(ProgressEvent.SOCKET_DATA, handleSocketData);
       }
@@ -55,9 +54,11 @@ package archipelago
       {
          Main.debugLogAP.print("Can't connect to Archipelago client. Flash Player refused to allow us to connect and threw a security error.");
          Main.debugLogAP.print("How to fix it:");
-
+         
+         
          Main.debugLogAP.print("If you're running EBF5 locally via Flash Player, go into Global Settings > Advanced and add this SWF file as a trusted location.");
          // ^ we might actually just want to use a JPEXS patch for this, i'll look into it later.
+
 
          Main.debugLogAP.print("If you're running EBF5 via Ruffle, then allow it to connect next time when you get the pop up from Ruffle.");
          Main.debugLogAP.print("If you're running EBF5 via Steam with Epic Battle Fantasy 5.exe, then this is a bug on the mod's end.");
@@ -65,9 +66,10 @@ package archipelago
          // paid version of the game.
          // also just allowing it access to any localhost port could legitimately be a security issue if the swf was served from a website
          // and currently idk what port we'll use for game to client communication.
-         Main.debugLogAP.print("If you're running EBF5 in a browser, then unfortunately playing the mod this way is unimplemented. You'll have to run it in one of the " +
-               "ways listed above.");
+         Main.debugLogAP.print("If you're running EBF5 in a browser, then unfortunately playing the mod this way is unimplemented. You'll have to run it in one of the ways listed above.");
          Main.debugLogAP.print("Error message: " + event.text);
+
+         // from the doc, another cause could be port number being lower than 1024 or higher than 65535
       }
 
       public function sendUTF8(text:String):void
@@ -94,36 +96,36 @@ package archipelago
       {
          while (bytesAvailable > 0)
          {
+            // read header
             if (isWaitingForNewMessage)
             {
-               if (bytesAvailable < 4)
-               {
-                  return;
-               }
-               else
-               {
-                  currentMessageFinalLength = readUnsignedInt();
+               if (bytesAvailable < 4) return;
 
-               }
+               // prepare to receive payload
+               currentMessageFinalLength = readUnsignedInt();
+               currentReceivedMessageFragments.clear();
+               isWaitingForNewMessage = false;
             }
-            var bytesToRead:uint = 0;
-            if (bytesAvailable + currentReceivedMessageFragments.length >= currentMessageFinalLength)
+
+            // read payload
+            var remaining:uint = currentMessageFinalLength - currentReceivedMessageFragments.length;
+            var toRead:uint = Math.min(bytesAvailable, remaining);
+            readBytes(currentReceivedMessageFragments, currentReceivedMessageFragments.length, toRead);
+
+            // payload completely received
+            if (currentReceivedMessageFragments.length == currentMessageFinalLength)
             {
-               bytesToRead = currentMessageFinalLength - currentReceivedMessageFragments.length;
+               // read utf-8 string from received bytes
+               currentReceivedMessageFragments.position = 0;
+               var msg:String = currentReceivedMessageFragments.readUTFBytes(currentReceivedMessageFragments.length);
+
+               // event call
+               onUTF8MessageReceivedCallbackHandler.onUTF8MessageReceived(msg);
+
+               // prepare to receive next message
                isWaitingForNewMessage = true;
-            }
-            else
-            {
-               bytesToRead = bytesAvailable;
-            }
-            currentReceivedMessageFragments.writeUTFBytes(readUTFBytes(bytesToRead)); // this feels really dumb but i need ByteArray so i get the byte length, because unicode
-            if (isWaitingForNewMessage)
-            {
-               if (onUTF8MessageReceivedCallbackHandler != null && onUTF8MessageReceivedCallbackHandler.onUTF8MessageReceived != null)
-               {
-                  currentReceivedMessageFragments.position = 0;
-                  onUTF8MessageReceivedCallbackHandler.onUTF8MessageReceived(currentReceivedMessageFragments.readUTFBytes(currentReceivedMessageFragments.length));
-               }
+               currentMessageFinalLength = 0;
+               currentReceivedMessageFragments.clear();
             }
          }
       }
