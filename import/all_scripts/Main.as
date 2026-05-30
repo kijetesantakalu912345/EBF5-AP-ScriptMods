@@ -199,6 +199,18 @@ package
          {
          }
       }
+
+      public static function initAPDebugLogger() : void
+      {
+         if(debugLogAP != null || Game.root == null || Game.root.stage == null)
+         {
+            return;
+         }
+
+         debugLogAP = new APDebugLogger();
+         Game.root.stage.addChild(debugLogAP);
+         debugLogAP.initTextField();
+      }
       
       public static function testConnection() : *
       {
@@ -939,9 +951,6 @@ package
             this.timer.start();
             Medals.resendMedals();
          }
-         debugLogAP = new APDebugLogger();
-         stage.addChild(debugLogAP);
-         debugLogAP.initTextField();
       }
       
       public function enterFrameHandler(param1:Event = null) : *
@@ -1014,6 +1023,9 @@ package
          Game.root = this;
          stage.stageFocusRect = false;
          stage.showDefaultContextMenu = false;
+         // Create the debug logger ASAP, this allows for logging 
+         // to be available during the first .meow file loads.
+         initAPDebugLogger();
          this.minigame = new Minigame();
          this.addChild(this.minigame);
          this.minigame.x = 155.8;
