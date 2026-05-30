@@ -1,8 +1,11 @@
 package archipelago
 {
    import flash.display.Sprite;
+   import flash.events.Event;
+   import flash.events.KeyboardEvent;
    import flash.text.TextField;
    import flash.text.TextFormat;
+   import flash.ui.Keyboard;
    // really basic on screen logger meant for quick and dirty debug stuff. i just want a way to get easy visual feedback because we can't (easily) view the trace() output.
    public class APDebugLogger extends flash.display.Sprite
    {
@@ -12,6 +15,8 @@ package archipelago
       public function APDebugLogger()
       {
          super();
+         addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+         addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
       }
 
       public function initTextField():void
@@ -38,6 +43,33 @@ package archipelago
          textField.setTextFormat(textFormat);
          textField.defaultTextFormat = textFormat;
          addChild(textField);
+         visible = false;
+      }
+
+      private function onAddedToStage(event:Event):void
+      {
+         if (stage == null)
+         {
+            return;
+         }
+
+         stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown, false, 0, true);
+      }
+
+      private function onRemovedFromStage(event:Event):void
+      {
+         if (stage)
+         {
+            stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
+         }
+      }
+
+      private function handleKeyDown(event:KeyboardEvent):void
+      {
+         if (event.keyCode == Keyboard.F3)
+         {
+            visible = !visible;
+         }
       }
 
       public function print(text:String):void
