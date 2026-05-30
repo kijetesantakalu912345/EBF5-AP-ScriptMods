@@ -41,3 +41,7 @@ In game, the logger visibility can be toggled on/off with F3.
 
 ### REMOVE THE ASSETS FOLDER FROM SCRIPT EXPORTS!
 When/if you need to reexport all scripts, make sure to remove the `./_assets/` folder *BEFORE* commiting the change.<br>
+
+### Changelog
+See [CHANGELOG.md](./CHANGELOG.md) for a list of recent changes.
+This should be updated with any notable changes to vanilla behavior or useful information that we may want to communicate to users as needed.

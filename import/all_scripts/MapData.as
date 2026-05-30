@@ -2662,7 +2662,7 @@ package
             },{
                "mc":"chest2",
                "type":CHEST,
-               "data":[Items.flower,6,1,Items.silk,3,Items.poptart,1]
+               "data":[Items.flower,6,Items.silk,3,Items.poptart,1]
             },{
                "mc":"chest1",
                "type":CHEST,
