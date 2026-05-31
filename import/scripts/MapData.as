@@ -1693,6 +1693,14 @@ package
                "mc":"chest4",
                "type":CHEST,
                "data":[Items.gamechild,1,Equips.ramchip,1,Items.gamechild,1]
+            },{
+               "mc":"chest5",
+               "type":CHEST,
+               "data":[Items.scouter,1,Items.oldboots,1,Items.map,1]
+            },{
+               "mc":"chest6",
+               "type":CHEST,
+               "data":[Items.bru,1,Items.shuriken,1]
             }];
             doorLinks = [[22,7,6,2,"door"]];
             if(SaveData.questNo == 1)

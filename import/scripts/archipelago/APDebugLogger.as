@@ -12,6 +12,8 @@ package archipelago
       public var textField:TextField;
       private var textFormat:TextFormat;
 
+      private var maxLines:int = 15;
+
       public function APDebugLogger()
       {
          super();
@@ -75,6 +77,12 @@ package archipelago
       public function print(text:String):void
       {
          this.textField.text += text + "\n";
+         var lines:Array = this.textField.text.split("\n");
+         if (lines.length > maxLines)
+         {
+            lines = lines.slice(lines.length - maxLines);
+            this.textField.text = lines.join("\n");
+         }
       }
    }
 }

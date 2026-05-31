@@ -4,3 +4,4 @@
 
 ### AP Additions
 - AP Debug Log box in game has been added and is toggleable with F3.
+- Moved the initial starting items to chests given after starting a new game in Matt's House.
