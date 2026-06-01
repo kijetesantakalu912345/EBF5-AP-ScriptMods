@@ -17,6 +17,8 @@ package
 
       public static var apItemHandler:ItemHandler = null;
 
+      public static var apDataModHandler:APDataModHandler = null;
+
       public static var kongregate:*;
       
       public static var armorQuests:*;
@@ -1076,6 +1078,11 @@ package
          if (Main.apItemHandler == null)
          {
             Main.apItemHandler = new ItemHandler(Main.apSocket);
+         }
+
+         if (Main.apDataModHandler == null)
+         {
+            Main.apDataModHandler = new APDataModHandler(Main.apSocket);
          }
       }
    }
