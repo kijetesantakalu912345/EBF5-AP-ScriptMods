@@ -50,6 +50,21 @@ Count is optional for non-item types and defaults to 1 if not provided.
 }
 ```
 
+### seed_data
+Sent by the server to the game to send the initial seed data for the game.
+Currently includes the starting player and starting equipment for each player.
+```json
+{
+   "type": "seed_data",
+   "start_player": "natalie",
+   "start_equips": {
+      "matt": ["poisonfang", "wizardrobe", "knightshelmet"],
+      "natalie": ["arctictrident", "rangerskirt", "darkbobble"],
+      ...
+   }
+}
+```
+
 Sends a validation message of type "received_item_count_update" with the new count of all received items in game memory if successful.
 
 ## Game to AP Client Messages

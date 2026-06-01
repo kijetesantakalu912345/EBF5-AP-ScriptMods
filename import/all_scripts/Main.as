@@ -593,6 +593,10 @@ package
          if(!newGamePlusFlag)
          {
             Summons.info = {};
+
+            // Reinitialize players and game for starting party/equipment to take effect
+            Players.init();
+            Game.init();
          }
       }
       

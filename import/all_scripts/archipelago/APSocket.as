@@ -165,7 +165,14 @@ package archipelago
             var jsonType:String = jsonData.type;
             if (jsonHandler.supportsJSONType(jsonType))
             {
-               jsonHandler.onJSONMessageReceived(jsonData);
+               try
+               {
+                  jsonHandler.onJSONMessageReceived(jsonData);
+               }
+               catch (e:Error)
+               {
+                  Main.debugLogAP.print("Error while handling JSON message type " + jsonType + ": " + e);
+               }
             }
          }
       }

@@ -63,6 +63,18 @@ package
       
       public static function init() : *
       {
+         // Start with random party and start equipment from AP seed.
+         if (Main.apDataModHandler != null)
+         {
+            Main.apDataModHandler.onGameInit();
+            return;
+         }
+         else
+         {
+            party = [Players.player1];
+         }
+
+         // Vanilla behavior
          if(Debug.players == 1)
          {
             party = [Players.player1];
