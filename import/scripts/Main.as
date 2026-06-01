@@ -13,6 +13,10 @@ package
    {
       public static var debugLogAP:archipelago.APDebugLogger;
 
+      public static var apSocket:APSocket = null;
+
+      public static var apItemHandler:ItemHandler = null;
+
       public static var kongregate:*;
       
       public static var armorQuests:*;
@@ -1062,9 +1066,17 @@ package
          Options.idlePlayers = false;
          BattlesAlt.calculateFoeLevels();
          // AP debug connection stuff
-         var socket:APSocket = new APSocket();
-         socket.connect("localhost", 4999);
-         socket.sendUTF8("test message sent by the game to the server");
+         if (Main.apSocket == null)
+         {
+            Main.apSocket = new APSocket();
+            Main.apSocket.connect("localhost", 4999);
+            Main.apSocket.sendUTF8("test message sent by the game to the server");
+         }
+
+         if (Main.apItemHandler == null)
+         {
+            Main.apItemHandler = new ItemHandler(Main.apSocket);
+         }
       }
    }
 }
