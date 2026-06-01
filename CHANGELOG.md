@@ -6,3 +6,4 @@
 - AP Debug Log box in game has been added and is toggleable with F3.
 - Moved the initial starting items to chests given after starting a new game in Matt's House.
 - Display the wiki naming of map coords on the map tooltips. Ex - Matt's House - B5.
+- The map tooltip is now also shown when hovering over unexplored parts of the map.
