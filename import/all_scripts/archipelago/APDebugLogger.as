@@ -11,7 +11,6 @@ package archipelago
    {
       public var textField:TextField;
       private var textFormat:TextFormat;
-      private var logLines:Array = [];
 
       private var maxLines:int = 18;
 
@@ -77,13 +76,22 @@ package archipelago
 
       public function print(text:String):void
       {
-         logLines.push(text);
-         if (logLines.length > maxLines)
+         if (textField == null)
          {
-            logLines = logLines.slice(logLines.length - maxLines);
+            return;
          }
 
-         this.textField.text = logLines.join("\n");
+         if (textField.text.length > 0)
+         {
+            textField.appendText("\n");
+         }
+         textField.appendText(text);
+
+         while (textField.numLines > maxLines)
+         {
+            var secondLineOffset:int = textField.getLineOffset(1);
+            textField.text = textField.text.substring(secondLineOffset);
+         }
       }
    }
 }

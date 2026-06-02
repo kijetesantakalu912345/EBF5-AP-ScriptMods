@@ -3,6 +3,7 @@ package
    import flash.display.MovieClip;
    import foes.*;
    import text.*;
+   import archipelago.*;
    
    public class MapData
    {
@@ -1676,7 +1677,7 @@ package
             },{
                "mc":"chest0",
                "type":CHEST,
-               "data":[Items.buckle,1,Equips.bandage,1,Items.APiconEbf5SVG,1]
+               "data":[Items.buckle,1,Equips.bandage,1]
             },{
                "mc":"chest1",
                "type":CHEST,
@@ -1696,11 +1697,11 @@ package
             },{
                "mc":"chest5",
                "type":CHEST,
-               "data":[Items.scouter,1,Items.oldboots,1,Items.map,1]
+               "data":[Items.scouter,1,Items.map,1]
             },{
                "mc":"chest6",
                "type":CHEST,
-               "data":[Items.bru,1,Items.shuriken,1]
+               "data":[Items.oldboots,1,Items.bru,1,Items.shuriken,1]
             }];
             doorLinks = [[22,7,6,2,"door"]];
             if(SaveData.questNo == 1)
@@ -12888,6 +12889,11 @@ package
                maps.addTile(1,16,7,false);
                maps.addTile(1,16,8,false);
             }
+         }
+
+         if (Main.apDataModHandler != null)
+         {
+            Main.apDataModHandler.modifyMapData(maps);
          }
       }
    }

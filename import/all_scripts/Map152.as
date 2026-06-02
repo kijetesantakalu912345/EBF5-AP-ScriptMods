@@ -20,6 +20,7 @@ package
    [Embed(source="/_assets/assets.swf", symbol="symbol20271")]
    public dynamic class Map152 extends Maps
    {
+      private var chestCooldown:int = 30;
       public function Map152()
       {
          super();
@@ -48,6 +49,13 @@ package
          {
             return;
          }
+
+         if (chestCooldown > 0)
+         {
+            chestCooldown--;
+            return;
+         }
+         chestCooldown = 30; // Cooldown to prevent multiple chests from opening at the same time
          
          // Open chest 5 and chest 6 (initial checks) if not opened, but only one at a time
          if(APMapHelpers.tryOpenChest(this, "chest5"))

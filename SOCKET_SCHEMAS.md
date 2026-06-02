@@ -65,6 +65,27 @@ Currently includes the starting player and starting equipment for each player.
 }
 ```
 
+### chest_data
+Sent by the server to the game to send chest replacement data by chest id as defined in the AP World Locations.py.<br>
+For local items, use the `sid` and `count` fields to specify the item.<br>
+For remote items, use the `name` and `player` fields to specify the item by the player and item name.<br>
+```json
+{
+   "type": "chest_data",
+   "chest_replacements": {
+      "152-0-0": {
+         "sid": "coffee",
+         "count": 5
+      },
+      "26-1-1": {
+         "name": "Double Jump",
+         "player": "Mario"
+      },
+      ...
+   }
+}
+```
+
 Sends a validation message of type "received_item_count_update" with the new count of all received items in game memory if successful.
 
 ## Game to AP Client Messages

@@ -35,7 +35,7 @@ package archipelago
 
       public function onUTF8MessageReceived(receivedText:String):void
       {
-         Main.debugLogAP.print("received text: \"" + receivedText + "\"");
+         // Main.debugLogAP.print("received text: \"" + receivedText + "\"");
       }
 
       private function closeHandler(event:Event):void
@@ -158,7 +158,7 @@ package archipelago
             return;
          }
 
-         Main.debugLogAP.print("Received JSON message of type: " + jsonData.type);
+         // Main.debugLogAP.print("Received JSON message of type: " + jsonData.type);
          
          for each (var jsonHandler:IJSONMessageRecivedHandler in onJSONMessageReceivedCallbackHandlers)
          {
