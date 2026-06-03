@@ -93,6 +93,8 @@ package
       public static var exeLoad:String = "";
 
       public static var receivedApItemIndex:int = 0;
+
+      public static var apItemsSent:Array = [];
       
       public function SaveData()
       {
@@ -128,6 +130,7 @@ package
          playTimeAtLoad = 0;
          summonPower = Constants.defaultSummonPower;
          receivedApItemIndex = 0;
+         apItemsSent = [];
       }
       
       public static function initForNewgamePlus() : *
@@ -628,6 +631,7 @@ package
 
             // AP Save data
             _loc5_.apItemIndex = receivedApItemIndex;
+            _loc5_.apItemsSent = apItemsSent.slice(0);
 
             if(!Options.enableSols)
             {
@@ -925,6 +929,11 @@ package
          if(data.hasOwnProperty("apItemIndex"))
          {
             receivedApItemIndex = int(data.apItemIndex);
+         }
+         apItemsSent = [];
+         if(data.hasOwnProperty("apItemsSent"))
+         {
+            apItemsSent = data.apItemsSent.slice(0);
          }
          if(saveName != "autosave" || Boolean(data.blocks))
          {

@@ -7,12 +7,15 @@ package archipelago
       // List of items received from Archipelago, stored as objects with "sid" and "count" properties
       public var receivedItems:Array = [];
 
+      private var sendCooldown:int = 60; // Ticks to wait when sending collected item updates to the server.
+
       // Receive JSON types
       private static var RECEIVED_ITEMS_RESET:String = "received_items_reset";
       private static var RECEIVED_ITEMS_ADD:String = "received_items_add";
 
       // Send JSON types
       private static var RECEIVED_ITEM_COUNT_UPDATE:String = "received_item_count_update";
+      private static var COLLECTED_ITEMS:String = "collected_items";
 
       public function ItemHandler(apSocket:APSocket)
       {
@@ -70,6 +73,19 @@ package archipelago
 
       public function onMainLoop():void
       {
+         // Handle sending updates about collected items to the server
+         if (Game.mode != Game.MAIN_MENU)
+         {
+            sendCooldown--;
+            if (sendCooldown <= 0)
+            {
+               sendCooldown = 60; // Reset cooldown
+
+               // Send the array of ALL collected item locations in case the server missed some updates
+               sendCollectedItems(SaveData.apItemsSent);
+            }
+         }
+
          if (Game.mode != Game.MAP || Game.mapMenu == null)
          {
             return;
@@ -105,6 +121,14 @@ package archipelago
             Main.debugLogAP.print("Error processing received item: " + e);
             return;
          }
+      }
+
+      public function sendCollectedItems(items:Array):void
+      {
+         Main.apSocket.sendJSON({
+                  "type": COLLECTED_ITEMS,
+                  "items": items
+               });
       }
 
       private function appendReceivedItems(items:Array):void
