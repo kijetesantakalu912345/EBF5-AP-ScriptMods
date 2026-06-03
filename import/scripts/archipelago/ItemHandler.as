@@ -73,35 +73,28 @@ package archipelago
 
       public function onMainLoop():void
       {
+
+         if (Game.mode == Game.MAIN_MENU || Game.mapMenu == null)
+         {
+            return;
+         }
+
          // Handle sending updates about collected items to the server
-         if (Game.mode != Game.MAIN_MENU)
+         sendCooldown--;
+         if (sendCooldown <= 0)
          {
-            sendCooldown--;
-            if (sendCooldown <= 0)
-            {
-               sendCooldown = 60; // Reset cooldown
+            sendCooldown = 60; // Reset cooldown
 
-               // Send the array of ALL collected item locations in case the server missed some updates
-               sendCollectedItems(SaveData.apItemsSent);
-            }
+            // Send the array of ALL collected item locations in case the server missed some updates
+            sendCollectedItems(SaveData.apItemsSent);
          }
 
-         if (Game.mode != Game.MAP || Game.mapMenu == null)
-         {
-            return;
-         }
-
-         if (Game.mapMenu.treasurebox.visible || Game.mapMenu.textbox.visible)
-         {
-            return;
-         }
-
+         // Try adding the next item if we have received items that we haven't processed yet
          if (SaveData.receivedApItemIndex >= receivedItems.length)
          {
             return;
          }
 
-         // Try adding the next item
          try
          {
             var nextItemData:Object = receivedItems[SaveData.receivedApItemIndex];
@@ -146,7 +139,7 @@ package archipelago
             {
                count = int(itemData.count);
             }
-            
+
             receivedItems.push({
                      "sid": String(itemData.sid),
                      "count": count
