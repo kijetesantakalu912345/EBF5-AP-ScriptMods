@@ -10,8 +10,11 @@ package archipelago
    {
       /**
        * Called when a TCP message from Archipelago is received.
-      */
-      public var onUTF8MessageReceivedCallbackHandler:IUTF8MessageRecivedHandler;
+       * There are 2 separate handlers for UTF-8 and JSON messages.
+       * The JSON handler should be used for data messages.
+       */
+      public var onUTF8MessageReceivedCallbackHandlers:Array = [];
+      public var onJSONMessageReceivedCallbackHandlers:Array = [];
 
       public var isWaitingForNewMessage:Boolean = true;
       public var currentMessageFinalLength:uint = 0;
@@ -22,7 +25,7 @@ package archipelago
       {
          super();
          // this is just for testing and should probably be removed later. maybe i'll call a function that calls the callback and logs the text to the debug log.
-         onUTF8MessageReceivedCallbackHandler = this;
+         onUTF8MessageReceivedCallbackHandlers.push(this);
          addEventListener(Event.CLOSE, closeHandler);
          addEventListener(Event.CONNECT, connectHandler);
          //addEventListener(IOErrorEvent.IO_ERROR, );
@@ -32,7 +35,7 @@ package archipelago
 
       public function onUTF8MessageReceived(receivedText:String):void
       {
-         Main.debugLogAP.print("received text: \"" + receivedText + "\"");
+         // Main.debugLogAP.print("received text: \"" + receivedText + "\"");
       }
 
       private function closeHandler(event:Event):void
@@ -92,6 +95,12 @@ package archipelago
          flush();
       }
 
+      public function sendJSON(data:Object):void
+      {
+         var jsonString:String = JSON.stringify(data);
+         sendUTF8(jsonString);
+      }
+
       private function handleSocketData(event:ProgressEvent):void
       {
          while (bytesAvailable > 0)
@@ -120,12 +129,50 @@ package archipelago
                var msg:String = currentReceivedMessageFragments.readUTFBytes(currentReceivedMessageFragments.length);
 
                // event call
-               onUTF8MessageReceivedCallbackHandler.onUTF8MessageReceived(msg);
+               for each (var handler:IUTF8MessageRecivedHandler in onUTF8MessageReceivedCallbackHandlers)
+               {
+                  handler.onUTF8MessageReceived(msg);
+               }
+
+               // Convert to JSON and call JSON handlers if possible
+               processJSONMessage(msg);
 
                // prepare to receive next message
                isWaitingForNewMessage = true;
                currentMessageFinalLength = 0;
                currentReceivedMessageFragments.clear();
+            }
+         }
+      }
+
+      private function processJSONMessage(jsonText:String):void
+      {
+         var jsonData:Object = null;
+         try
+         {
+            jsonData = JSON.parse(jsonText);
+         }
+         catch (e:Error)
+         {
+            // Ignore non-JSON messages
+            return;
+         }
+
+         // Main.debugLogAP.print("Received JSON message of type: " + jsonData.type);
+         
+         for each (var jsonHandler:IJSONMessageRecivedHandler in onJSONMessageReceivedCallbackHandlers)
+         {
+            var jsonType:String = jsonData.type;
+            if (jsonHandler.supportsJSONType(jsonType))
+            {
+               try
+               {
+                  jsonHandler.onJSONMessageReceived(jsonData);
+               }
+               catch (e:Error)
+               {
+                  Main.debugLogAP.print("Error while handling JSON message type " + jsonType + ": " + e);
+               }
             }
          }
       }

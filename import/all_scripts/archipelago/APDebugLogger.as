@@ -1,17 +1,24 @@
 package archipelago
 {
    import flash.display.Sprite;
+   import flash.events.Event;
+   import flash.events.KeyboardEvent;
    import flash.text.TextField;
    import flash.text.TextFormat;
+   import flash.ui.Keyboard;
    // really basic on screen logger meant for quick and dirty debug stuff. i just want a way to get easy visual feedback because we can't (easily) view the trace() output.
    public class APDebugLogger extends flash.display.Sprite
    {
       public var textField:TextField;
       private var textFormat:TextFormat;
 
+      private var maxLines:int = 18;
+
       public function APDebugLogger()
       {
          super();
+         addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+         addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
       }
 
       public function initTextField():void
@@ -38,11 +45,53 @@ package archipelago
          textField.setTextFormat(textFormat);
          textField.defaultTextFormat = textFormat;
          addChild(textField);
+         visible = false;
+      }
+
+      private function onAddedToStage(event:Event):void
+      {
+         if (stage == null)
+         {
+            return;
+         }
+
+         stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown, false, 0, true);
+      }
+
+      private function onRemovedFromStage(event:Event):void
+      {
+         if (stage)
+         {
+            stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
+         }
+      }
+
+      private function handleKeyDown(event:KeyboardEvent):void
+      {
+         if (event.keyCode == Keyboard.F3)
+         {
+            visible = !visible;
+         }
       }
 
       public function print(text:String):void
       {
-         this.textField.text += text + "\n";
+         if (textField == null)
+         {
+            return;
+         }
+
+         if (textField.text.length > 0)
+         {
+            textField.appendText("\n");
+         }
+         textField.appendText(text);
+
+         while (textField.numLines > maxLines)
+         {
+            var secondLineOffset:int = textField.getLineOffset(1);
+            textField.text = textField.text.substring(secondLineOffset);
+         }
       }
    }
 }
