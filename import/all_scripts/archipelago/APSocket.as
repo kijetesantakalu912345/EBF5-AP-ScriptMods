@@ -60,7 +60,8 @@ package archipelago
          
          
          Main.debugLogAP.print("If you're running EBF5 locally via Flash Player, go into Global Settings > Advanced and add this SWF file as a trusted location.");
-         // ^ we might actually just want to use a JPEXS patch for this, i'll look into it later.
+         // ^ I was hoping but unfortunately I don't think we can patch this one with JPEXS
+
 
 
          Main.debugLogAP.print("If you're running EBF5 via Ruffle, then allow it to connect next time when you get the pop up from Ruffle.");
