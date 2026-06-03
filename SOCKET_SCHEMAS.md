@@ -89,6 +89,7 @@ For remote items, use the `name` and `player` fields to specify the item by the 
 Sends a validation message of type "received_item_count_update" with the new count of all received items in game memory if successful.
 
 ## Game to AP Client Messages
+
 ### received_item_count_update
 Sent by the game to the server whenever the count of received items changes.
 Used for the server to validate that items were successfully received in the game and to keep an accurate count of how many of each item the player has.
@@ -96,5 +97,18 @@ Used for the server to validate that items were successfully received in the gam
 {
    "type": "received_item_count_update",
    "count": 5,
+}
+```
+
+### collected_items
+Sent by the game to the server whenever the player collects items to let the AP client know which locations have been checked.
+```json
+{
+   "type": "collected_items",
+   "items": [
+      "152-0-0",
+      "26-1-1",
+      ...
+   ]
 }
 ```

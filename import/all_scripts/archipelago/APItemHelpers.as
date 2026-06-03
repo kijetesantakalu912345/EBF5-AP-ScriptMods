@@ -71,5 +71,38 @@ package archipelago
 
          return null;
       }
+
+      public static function addCollectedAPItem(chestName:String):void
+      {
+         var objectIndex:int = -1;
+         for (var i:int = 0; i < Maps.instance.objectData.length; i++)
+         {
+            var obj:Object = Maps.instance.objectData[i];
+            if (obj.mc == chestName)
+            {
+               objectIndex = i;
+               break;
+            }
+         }
+
+         if (objectIndex == -1)
+         {
+            Main.debugLogAP.print("Could not find object index for chest at map " + MapData.mapNo + " with name " + chestName);
+            return;
+         }
+
+         var chestIndex:int = int(chestName.substring(5));
+
+         // Format is <mapNo>-<objectDataIndex>-<chestIndex>
+         var chestId:String = MapData.mapNo + "-" + objectIndex + "-" + chestIndex;
+         if (SaveData.apItemsSent.indexOf(chestId) != -1)
+         {
+            // Already collected this chest, no need to send/record again
+            return;
+         }
+
+         SaveData.apItemsSent.push(chestId);
+         Main.apItemHandler.sendCollectedItems([chestId]);
+      }
    }
 }

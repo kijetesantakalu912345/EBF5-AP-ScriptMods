@@ -58,6 +58,10 @@ package archipelago
 
          // Mark chest as opened
          Maps.chestData[MapData.mapNo][chestIndex] = 2;
+
+         // AP Add chests to claimed checks
+         APItemHelpers.addCollectedAPItem(chestName);
+
          return true;
       }
    }
