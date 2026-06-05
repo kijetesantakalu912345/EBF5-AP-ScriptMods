@@ -20,13 +20,21 @@ package archipelago
       public var currentMessageFinalLength:uint = 0;
       public var currentReceivedMessageFragments:ByteArray = new ByteArray();
 
+      /**
+       * When the client wants to disconnect the socket this becomes true and we want to stop sending new messages,
+       * so that the client can hopefully find a safe break between messages where it can close the socket.
+       * The client will uncleanly just close the socket anyway if its timeout runs out while waiting for its buffers to empty.
+       */
+      // Due to the nature of how we're sending messages in theory we could get away with just forcefully disconnecting the socket every time,
+      // but due to asyncio structuring stuff on the client's side we have to schedule closing the socket anyway, so might as well be clean too.
+      public var clientHasGivenDisconnectSoonNotice:Boolean = false;
+
       // 4999 is just some random port number that according to wikipedia's list of TCP and UDP port numbers doesn't seem to have much usage.
       public function APSocket(host:String = null, port:uint = 4999)
       {
          super();
-         // this is just for testing and should probably be removed later. maybe i'll call a function that calls the callback and logs the text to the debug log.
          onUTF8MessageReceivedCallbackHandlers.push(this);
-         addEventListener(Event.CLOSE, closeHandler);
+         addEventListener(Event.CLOSE, closeHandler); // This event does not fire when the game closes the socket! only when the AP client closes it!
          addEventListener(Event.CONNECT, connectHandler);
          //addEventListener(IOErrorEvent.IO_ERROR, );
          addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
@@ -35,24 +43,47 @@ package archipelago
 
       public function onUTF8MessageReceived(receivedText:String):void
       {
+         if (receivedText == "client_disconnect_soon")
+         {
+            clientHasGivenDisconnectSoonNotice = true;
+            Main.debugLogAP.print("received a client_disconnect_soon.")
+         }
          // Main.debugLogAP.print("received text: \"" + receivedText + "\"");
+      }
+
+      private function onCloseFromEitherSide():void
+      {
+         Main.debugLogAP.print("socket disconnected.");
+         clientHasGivenDisconnectSoonNotice = false;
+         // in case we disconnected mid message
+         isWaitingForNewMessage = true;
+         currentReceivedMessageFragments = new ByteArray();
+         currentMessageFinalLength = 0;
       }
 
       private function closeHandler(event:Event):void
       {
-         Main.debugLogAP.print("socket disconnected.");
+         onCloseFromEitherSide()
       }
 
       private function connectHandler(event:Event):void
       {
          Main.debugLogAP.print("socket connected!");
+         clientHasGivenDisconnectSoonNotice = false;
+      }
+
+      /** small wrapper around flash.net.Socket.close(), calls an internal callback after closing the socket. */
+      public override function close():void
+      {
+         super.close()
+         onCloseFromEitherSide()
       }
 
       // in order to be allowed to use sockets in local flash player the SWF's file path must be trusted in the global settings, so yeah we'll want to tell the user
       // how to possibly work around this error if they encounter it. (in AIR it's way less restrictive and seems to just work).
       // though honestly this is probably more helpful for us so that we get in game error message popups with debug flash player while actually being allowed to use sockets.
       // https://airsdk.dev/reference/actionscript/3.0/flash/net/Socket.html
-      // also for some reason it takes like a good 10 seconds for this to show up in the log after the error happens which is annoying.
+      // also the timeout takes a fair bit to expire which can be a bit annoying while trying to test this in game.
       private function securityErrorHandler(event:SecurityErrorEvent):void
       {
          Main.debugLogAP.print("Can't connect to Archipelago client. Flash Player refused to allow us to connect and threw a security error.");
@@ -61,9 +92,6 @@ package archipelago
          
          Main.debugLogAP.print("If you're running EBF5 locally via Flash Player, go into Global Settings > Advanced and add this SWF file as a trusted location.");
          // ^ I was hoping but unfortunately I don't think we can patch this one with JPEXS
-
-
-
          Main.debugLogAP.print("If you're running EBF5 via Ruffle, then allow it to connect next time when you get the pop up from Ruffle.");
          Main.debugLogAP.print("If you're running EBF5 via Steam with Epic Battle Fantasy 5.exe, then this is a bug on the mod's end.");
          // this would probably be easy to implement but testing it would probably be a lot of set up work and this is an extremely unlikely case because this is the

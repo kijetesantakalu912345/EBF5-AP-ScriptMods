@@ -12,6 +12,7 @@ package archipelago
       // Receive JSON types
       private static var RECEIVED_ITEMS_RESET:String = "received_items_reset";
       private static var RECEIVED_ITEMS_ADD:String = "received_items_add";
+      private static var CLIENT_TO_GAME_DEBUG_MESSAGE:String = "client_to_game_debug_message";
 
       // Send JSON types
       private static var RECEIVED_ITEM_COUNT_UPDATE:String = "received_item_count_update";
@@ -28,6 +29,18 @@ package archipelago
          if (!jsonData || !jsonData.type)
          {
             return;
+         }
+
+         if (jsonData.type == CLIENT_TO_GAME_DEBUG_MESSAGE)
+         {
+            if (jsonData.text != null)
+            {
+               Main.debugLogAP.print("Received debug message from client: \"" + jsonData.text + "\"");
+            }
+            else
+            {
+               Main.debugLogAP.print("We received a JSON client_to_game_debug_message message but the client didn't,,,, add the text field?????? what????");
+            }
          }
 
          if (jsonData.type == RECEIVED_ITEMS_RESET)
@@ -63,7 +76,7 @@ package archipelago
 
       public function supportsJSONType(jsonType:String):Boolean
       {
-         return jsonType == RECEIVED_ITEMS_RESET || jsonType == RECEIVED_ITEMS_ADD;
+         return jsonType == RECEIVED_ITEMS_RESET || jsonType == RECEIVED_ITEMS_ADD || CLIENT_TO_GAME_DEBUG_MESSAGE;
       }
 
       public function getLoopInterval():int
@@ -73,8 +86,10 @@ package archipelago
 
       public function onMainLoop():void
       {
-
-         if (Game.mode == Game.MAIN_MENU || Game.mapMenu == null)
+         // we don't want to send new messages after the client has said that it wishes to disconnect.
+         // we still technically *can*, but we don't want to.
+         // TODO: probably(?) move the Main.apSocket.clientHasGivenDisconnectSoonNotice check somewhere else, like sendJSON or something.
+         if (Game.mode == Game.MAIN_MENU || Game.mapMenu == null || Main.apSocket.clientHasGivenDisconnectSoonNotice)
          {
             return;
          }

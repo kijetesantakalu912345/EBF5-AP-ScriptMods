@@ -1076,7 +1076,7 @@ package
          {
             Main.apSocket = new APSocket();
             Main.apSocket.connect("localhost", 4999);
-            Main.apSocket.sendUTF8("test message sent by the game to the server");
+            Main.apSocket.sendUTF8("test message sent by the game to the server. here's some unicode characters: π😀🏴‍☠️—");
          }
 
          if (Main.apItemHandler == null)

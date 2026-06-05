@@ -88,6 +88,17 @@ For remote items, use the `name` and `player` fields to specify the item by the 
 
 Sends a validation message of type "received_item_count_update" with the new count of all received items in game memory if successful.
 
+### client_to_game_debug_message
+Sent by the client to the game to print a string to the game's APDebugLogger. As the name suggests this is only meant for debugging purposes.<br>
+Mainly for testing if basic socket communication is working.
+
+```json
+{
+   "type": "client_to_game_debug_message",
+   "text": "Message sent from the EBF5AP client to the in game EBF5AP APDebugLogger."
+}
+```
+
 ## Game to AP Client Messages
 
 ### received_item_count_update
@@ -112,3 +123,16 @@ Sent by the game to the server whenever the player collects items to let the AP 
    ]
 }
 ```
+
+# Raw non-JSON UTF-8 message(s)
+For messages that, for whatever reason, `APSocket` itself should or needs to handle instead of `ItemHandler`, raw non-JSON UTF-8 is used.
+Ideally the use of this type of message should be minimized.
+
+### client_disconnect_soon
+```
+client_disconnect_soon
+```
+
+Sent by the client to the game when the client wants to disconnect the socket soon. The game should stop sending new messages after this message is received.
+The client will finish sending any messages currently in its buffers and will try to wait for a break between received messages where it can safely close the socket (I.E., if the end of one message and the start of the next message are in the same TCP packet, the client will *continue* reading, until it encounters a TCP packet that ends the previous message and that doesn't start a new one).
+If the client's socket read/write buffers still aren't empty after waiting a timeout, the client will close the socket anyway, discarding the contents of its socket read/write buffers.

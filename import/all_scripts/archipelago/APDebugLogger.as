@@ -45,7 +45,7 @@ package archipelago
          textField.setTextFormat(textFormat);
          textField.defaultTextFormat = textFormat;
          addChild(textField);
-         visible = false;
+         visible = true; // We can set this back to false once we release it but while we're testing I'd prefer to have it on
       }
 
       private function onAddedToStage(event:Event):void
