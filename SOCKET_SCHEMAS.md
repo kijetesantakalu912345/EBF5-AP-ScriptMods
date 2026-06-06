@@ -89,8 +89,7 @@ For remote items, use the `name` and `player` fields to specify the item by the 
 Sends a validation message of type "received_item_count_update" with the new count of all received items in game memory if successful.
 
 ### client_to_game_debug_message
-Sent by the client to the game to print a string to the game's APDebugLogger. As the name suggests this is only meant for debugging purposes.<br>
-Mainly for testing if basic socket communication is working.
+Sent by the client to the game to print a string to the game's `APDebugLogger`.
 
 ```json
 {
