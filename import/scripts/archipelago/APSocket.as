@@ -21,12 +21,12 @@ package archipelago
       public var currentReceivedMessageFragments:ByteArray = new ByteArray();
 
       /**
-       * When the client wants to disconnect the socket this becomes true and we want to stop sending new messages,
-       * so that the client can hopefully find a safe break between messages where it can close the socket.
-       * The client will uncleanly just close the socket anyway if its timeout runs out while waiting for its buffers to empty.
+       * Becomes true when a `client_disconnect_soon` TCP message is received.
+       * The game should stop sending new messages once this flag becomes true, so that the client can cleanly disconnect between messages.
+       * The client will uncleanly close the socket anyway if its timeout runs out while waiting for its buffers to empty.
        */
       // Due to the nature of how we're sending messages in theory we could get away with just forcefully disconnecting the socket every time,
-      // but due to asyncio structuring stuff on the client's side we have to schedule closing the socket anyway, so might as well be clean too.
+      // but due to async structuring stuff on the client's side we have to schedule closing the socket anyway, so might as well be clean too.
       public var clientHasGivenDisconnectSoonNotice:Boolean = false;
 
       // 4999 is just some random port number that according to wikipedia's list of TCP and UDP port numbers doesn't seem to have much usage.
@@ -51,7 +51,7 @@ package archipelago
          // Main.debugLogAP.print("received text: \"" + receivedText + "\"");
       }
 
-      private function onCloseFromEitherSide():void
+      private function onSocketClosed():void
       {
          Main.debugLogAP.print("socket disconnected.");
          clientHasGivenDisconnectSoonNotice = false;
@@ -63,7 +63,7 @@ package archipelago
 
       private function closeHandler(event:Event):void
       {
-         onCloseFromEitherSide()
+         onSocketClosed()
       }
 
       private function connectHandler(event:Event):void
@@ -72,11 +72,11 @@ package archipelago
          clientHasGivenDisconnectSoonNotice = false;
       }
 
-      /** small wrapper around flash.net.Socket.close(), calls an internal callback after closing the socket. */
+      /** small wrapper around `flash.net.Socket.close()`. calls an internal callback after closing the socket. */
       public override function close():void
       {
          super.close()
-         onCloseFromEitherSide()
+         onSocketClosed()
       }
 
       // in order to be allowed to use sockets in local flash player the SWF's file path must be trusted in the global settings, so yeah we'll want to tell the user
@@ -89,9 +89,9 @@ package archipelago
          Main.debugLogAP.print("Can't connect to Archipelago client. Flash Player refused to allow us to connect and threw a security error.");
          Main.debugLogAP.print("How to fix it:");
          
-         
+         // I was hoping but unfortunately I don't think we can patch this one with JPEXS.
          Main.debugLogAP.print("If you're running EBF5 locally via Flash Player, go into Global Settings > Advanced and add this SWF file as a trusted location.");
-         // ^ I was hoping but unfortunately I don't think we can patch this one with JPEXS
+
          Main.debugLogAP.print("If you're running EBF5 via Ruffle, then allow it to connect next time when you get the pop up from Ruffle.");
          Main.debugLogAP.print("If you're running EBF5 via Steam with Epic Battle Fantasy 5.exe, then this is a bug on the mod's end.");
          // this would probably be easy to implement but testing it would probably be a lot of set up work and this is an extremely unlikely case because this is the
