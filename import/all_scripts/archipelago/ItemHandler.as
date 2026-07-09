@@ -39,7 +39,7 @@ package archipelago
             }
             else
             {
-               Main.debugLogAP.print("We received a JSON client_to_game_debug_message message but the client didn't,,,, add the text field?????? what????");
+               Main.debugLogAP.print("We received a `client_to_game_debug_message` but the client didn't,,,, add the `text` field?????? what????");
             }
          }
 
@@ -88,8 +88,8 @@ package archipelago
       {
          // we don't want to send new messages after the client has said that it wishes to disconnect.
          // we still technically *can*, but we don't want to.
-         // TODO: probably(?) move the Main.apSocket.clientHasGivenDisconnectSoonNotice check somewhere else, like sendJSON or something.
-         if (Game.mode == Game.MAIN_MENU || Game.mapMenu == null || Main.apSocket.clientHasGivenDisconnectSoonNotice)
+         // TODO: probably(?) move the Main.apSocket.receivedDisconnectSoonNotice check somewhere else, like sendJSON or something.
+         if (Game.mode == Game.MAIN_MENU || Game.mapMenu == null || Main.apSocket.receivedDisconnectSoonNotice)
          {
             return;
          }

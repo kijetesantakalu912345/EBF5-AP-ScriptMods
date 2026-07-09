@@ -12,7 +12,7 @@ package archipelago
       public var textField:TextField;
       private var textFormat:TextFormat;
 
-      private var maxLines:int = 18;
+      private var maxLines:int = 21;
 
       public function APDebugLogger()
       {
@@ -25,13 +25,13 @@ package archipelago
       {
          textField = new TextField();
          textFormat = new TextFormat();
-         textFormat.font = "Verdana Bold";
+         textFormat.font = "Verdana";
          textFormat.color = 0xFFFFFF;
          textFormat.size = 12;
          textField.background = false;
          this.mouseChildren = false;
          this.mouseEnabled = false;
-         this.graphics.beginFill(0x000000, 0.5);
+         this.graphics.beginFill(0x000000, 0.7);
          this.graphics.drawRect(0, 0, 500, 300);
          this.graphics.endFill();
          textField.mouseEnabled = false; // maybe i'll add a toggle for this setting/showing this log in the first place but for now you'll have to deal with no copy pasting.
@@ -45,7 +45,7 @@ package archipelago
          textField.setTextFormat(textFormat);
          textField.defaultTextFormat = textFormat;
          addChild(textField);
-         visible = true; // We can set this back to false once we release it but while we're testing I'd prefer to have it on
+         visible = true; // We can set this back to false once we release it but while we're testing I'd prefer to have it on.
       }
 
       private function onAddedToStage(event:Event):void

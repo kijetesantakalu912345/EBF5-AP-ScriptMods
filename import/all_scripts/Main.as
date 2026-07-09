@@ -11,6 +11,8 @@ package
 
    public class Main extends MovieClip
    {
+      public static var apConnectUI:APConnectUI = null;
+
       public static var debugLogAP:archipelago.APDebugLogger;
 
       public static var apSocket:APSocket = null;
@@ -1075,18 +1077,20 @@ package
          if (Main.apSocket == null)
          {
             Main.apSocket = new APSocket();
-            Main.apSocket.connect("localhost", 4999);
-            Main.apSocket.sendUTF8("test message sent by the game to the server. here's some unicode characters: π😀🏴‍☠️—");
          }
-
          if (Main.apItemHandler == null)
          {
             Main.apItemHandler = new ItemHandler(Main.apSocket);
          }
-
          if (Main.apDataModHandler == null)
          {
             Main.apDataModHandler = new APDataModHandler(Main.apSocket);
+         }
+         if (Main.apConnectUI == null)
+         {
+            Main.debugLogAP.print(stage.width.toString() + " " + stage.height.toString() + " " + Game.root.stage.width.toString() + " " + Game.root.stage.height.toString());
+            Main.apConnectUI = new APConnectUI(Main.apSocket);
+            Game.root.stage.addChild(apConnectUI);
          }
       }
    }
