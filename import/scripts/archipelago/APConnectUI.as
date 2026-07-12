@@ -8,6 +8,7 @@ package archipelago
     import flash.text.TextFieldAutoSize;
     import flash.events.*;
 
+    // THIS UI NEEDS MORE POLISH BEFORE IT SHOULD SHIP!
     public class APConnectUI extends flash.display.Sprite implements IOnConnectHandler, IOnNotConnectedHandler
     {
         public static var CONNECT_TEXT:String = "Connect";
@@ -44,6 +45,7 @@ package archipelago
             addressField.setTextFormat(textFormat);
             addressField.defaultTextFormat = textFormat;
             addressField.appendText("localhost:4999");
+            addressField.y += titleText.textHeight + 4; // +x pixels of padding
             
             var width:int = titleText.textWidth + 6; // +x pixels of padding
             var height:int = 200;
@@ -54,6 +56,7 @@ package archipelago
             connectionButton.y = height - connectionButton.height;
             connectionButton.btn.addEventListener(MouseEvent.CLICK, onConnectionButtonPressed);
             this.addChild(titleText);
+            this.addChild(addressField);
             this.addChild(connectionButton);
             //this.width = width;
             //this.height = height;
@@ -71,11 +74,33 @@ package archipelago
             Main.debugLogAP.print("(dis)connect button pressed");
             if (!linkedApSocket.connected)
             {
+                Main.debugLogAP.print("trying to connect.");
+                // removing trailing or beginning whitespace would also be a good idea. though again that's polish.
+                var splitString:Array = addressField.text.split(":");
+                if (splitString.length != 2 || (splitString.length == 2 && (splitString[0] == "" || splitString[1] == "")))
+                {
+                    // we probably need to add a "status" textfield to this UI, or at least a place to specify messages like this other than the debug log.
+                    // that's polish though, right now I just want to get it working.
+                    Main.debugLogAP.print("Enter an address in the format of `address:port`.");
+                    return;
+                }
+                var host:String = splitString[0];
+                var port:int = parseInt(splitString[1]);
+                Main.debugLogAP.print("host: " + host + " | port: " + port.toString())
+                if (port < 1 || port > 65535)
+                {
+                    Main.debugLogAP.print("Invalid port! Must be a positive integer between 1 and 65535.")
+                    return;
+                }
+                if (port < 1024)
+                {
+                    Main.debugLogAP.print("Warning: flash player doesn't like using port numbers below 1024. This port might not work.");
+                }
+                // only do this if the user actually entered a (probably) valid address.
                 connectionButton.disableClick(); // prevent the user from pressing connect again before the timeout expires.
                 connectionButton.setText(TRYING_TO_CONNECT_TEXT);
-                Main.debugLogAP.print("trying to connect.");
                 // 4999 is just some random port number that according to wikipedia's list of TCP and UDP port numbers doesn't seem to have much usage.
-                Main.apSocket.connect("localhost", 4999);
+                Main.apSocket.connect(host, port);
                 Main.apSocket.sendUTF8("test message sent by the game to the client. here's some unicode characters: π😀🏴‍☠️—");
             }
             else
