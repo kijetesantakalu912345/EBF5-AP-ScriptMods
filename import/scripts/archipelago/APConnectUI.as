@@ -9,6 +9,8 @@ package archipelago
     import flash.events.*;
 
     // THIS UI NEEDS MORE POLISH BEFORE IT SHOULD SHIP!
+
+    // KNOWN BUG: you can enter a ton of characters into the address field and the text will just spill out onto the rest of the screen.
     public class APConnectUI extends flash.display.Sprite implements IOnConnectHandler, IOnNotConnectedHandler
     {
         public static var CONNECT_TEXT:String = "Connect";
@@ -39,33 +41,30 @@ package archipelago
             titleText.defaultTextFormat = textFormat;
             titleText.selectable = false;
             titleText.appendText("AP Client Connection");
+
+            textFormat.size = 18;
             addressField = new TextField();
             addressField.autoSize = TextFieldAutoSize.LEFT;
             addressField.type = TextFieldType.INPUT;
             addressField.setTextFormat(textFormat);
             addressField.defaultTextFormat = textFormat;
-            addressField.appendText("localhost:4999");
+            addressField.appendText("localhost:4999"); // 4999 is just some random port number that according to wikipedia's list of TCP and UDP port numbers doesn't seem to have much usage.
             addressField.y += titleText.textHeight + 4; // +x pixels of padding
             
             var width:int = titleText.textWidth + 6; // +x pixels of padding
-            var height:int = 200;
-            this.graphics.beginFill(0x000000, 0.7);
-            this.graphics.drawRect(0, 0, width, height);
-            this.graphics.endFill();
-            connectionButton = new APTextButton(0, 0, width, -1, CONNECT_TEXT, 16, 40);
-            connectionButton.y = height - connectionButton.height;
-            connectionButton.btn.addEventListener(MouseEvent.CLICK, onConnectionButtonPressed);
+
             this.addChild(titleText);
             this.addChild(addressField);
+            connectionButton = new APTextButton(0, 0, width, -1, CONNECT_TEXT, 16, 4);
+            connectionButton.y = this.height;
+            connectionButton.btn.addEventListener(MouseEvent.CLICK, onConnectionButtonPressed);
             this.addChild(connectionButton);
-            //this.width = width;
-            //this.height = height;
-            // I tried to put this in the top right corner of the screen but for some reason all of the ways to get the sprite's this.width are actually liars.
-            // So instead of wasting more time trying to do that I'm just putting it under the APDebugLogger.
+
+            this.graphics.beginFill(0x000000, 0.7);
+            this.graphics.drawRect(0, 0, width, this.height);
+            this.graphics.endFill();
             this.x = 0;
             this.y = 310;
-            Main.debugLogAP.print("width shenanigans. text: " + titleText.textWidth.toString() + " this.width: " + this.width.toString() + " calc: " + (Game.root.stage.width - this.width).toString() + "calc2: " + (Game.root.stage.width - titleText.textWidth).toString())
-            Main.debugLogAP.print(this.x.toString() + " " + this.y.toString());
             Main.debugLogAP.print("APConnectUI should exist.");
         }
 
@@ -99,7 +98,6 @@ package archipelago
                 // only do this if the user actually entered a (probably) valid address.
                 connectionButton.disableClick(); // prevent the user from pressing connect again before the timeout expires.
                 connectionButton.setText(TRYING_TO_CONNECT_TEXT);
-                // 4999 is just some random port number that according to wikipedia's list of TCP and UDP port numbers doesn't seem to have much usage.
                 Main.apSocket.connect(host, port);
                 Main.apSocket.sendUTF8("test message sent by the game to the client. here's some unicode characters: π😀🏴‍☠️—");
             }
