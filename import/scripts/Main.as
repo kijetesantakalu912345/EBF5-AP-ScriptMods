@@ -1088,7 +1088,6 @@ package
          }
          if (Main.apConnectUI == null)
          {
-            Main.debugLogAP.print(stage.width.toString() + " " + stage.height.toString() + " " + Game.root.stage.width.toString() + " " + Game.root.stage.height.toString());
             Main.apConnectUI = new APConnectUI(Main.apSocket);
             Game.root.stage.addChild(apConnectUI);
          }
