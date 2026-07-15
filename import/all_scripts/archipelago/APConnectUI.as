@@ -62,7 +62,7 @@ package archipelago
             addressField.defaultTextFormat = textFormat;
             addressField.appendText("localhost:4999"); // 4999 is just some random port number that according to wikipedia's list of TCP and UDP port numbers doesn't seem to have much usage.
             addressField.x = addressFieldLabel.width + 8; // +x pixels of padding
-            addressField.y = uiLine2Position; // +x pixels of padding
+            addressField.y = uiLine2Position;
             addressField.border = true;
             addressField.borderColor = 0xFFFFFF;
             addressField.addEventListener(Event.CHANGE, onAddressFieldChangedHandler);
