@@ -145,7 +145,7 @@ package archipelago
          textField.y = (height - textField.height)/2;
       }
 
-      public function setText(text:String)
+      public function setText(text:String):void
       {
          textField.text = "";
          textField.appendText(text);

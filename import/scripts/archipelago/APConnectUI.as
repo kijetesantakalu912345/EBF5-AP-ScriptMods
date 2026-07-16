@@ -15,9 +15,8 @@ package archipelago
         public static var TRYING_TO_CONNECT_TEXT:String = "Trying to connect...";
         public static var DISCONNECT_TEXT:String = "Disconnect";
         public var linkedApSocket:APSocket;
-        public var maxInputFieldTextPosition:int;
         private var titleText:TextField;
-        private var addressField:TextField;
+        private var addressField:APLineEdit;
         private var addressFieldLabel:TextField;
         private var connectionButton:APTextButton; // contextually "Connect"/"Disconnect"/'waiting to connect'
         
@@ -55,7 +54,7 @@ package archipelago
             addressFieldLabel.y = uiLine2Position;
             this.addChild(addressFieldLabel);
 
-            addressField = new TextField();
+            addressField = new APLineEdit();
             addressField.autoSize = TextFieldAutoSize.LEFT;
             addressField.type = TextFieldType.INPUT;
             addressField.setTextFormat(textFormat);
@@ -65,7 +64,7 @@ package archipelago
             addressField.y = uiLine2Position;
             addressField.border = true;
             addressField.borderColor = 0xFFFFFF;
-            addressField.addEventListener(Event.CHANGE, onAddressFieldChangedHandler);
+            addressField.setMaxViewWidth(width - addressField.x - 4); // -x pixels of padding
             
             this.addChild(titleText);
             this.addChild(addressField);
@@ -79,46 +78,6 @@ package archipelago
             this.graphics.endFill();
             this.x = 0;
             this.y = 310;
-            maxInputFieldTextPosition = this.width;
-        }
-
-        public function onAddressFieldChangedHandler(e:Event):void
-        {
-            // ALTERNATE IDEA: instead of scrolling the text, just start decreasing the font size when we reach the right edge.
-            // then once we get to some minimum font size we stop shrinking and don't allow any more characters to be entered.
-            // hm though. ideally I could just get this scrolling working... ughhhhh...
-            // maybe I'll just do the scrolling completely manually by directly modifying the textfield's x position
-            // and using stuff like caret listeners and mousewheel listeners for scrolling it back.
-
-            // ACTUALLY WAIT THIS SEEMS TO WORK FINE IF I MAKE THE TEXTFIELD RIGHT ALIGNED!
-            // keeping it left aligned and making it RTL might also work apparently but I haven't tested that.
-            // I'll probably want to add a label saying "address" or whatever next to the addressField so making it RTL should be fine.
-            // AI overview also says that just calling validateNow might also work for left aligned text? (double check that if you try implementing it)
-            // ehhhh ok but it doesn't work amazingly.
-
-            // Main.debugLogAP.print("onAddressFieldChangedHandler: addressField.width: " + addressField.width.toString() + " this.width: " + this.width.toString()
-            // + " addressField.x: " + addressField.x.toString() + " addressField.maxScrollH: "
-            // + addressField.maxScrollH.toString() + " maxInputFieldTextPosition: " + maxInputFieldTextPosition.toString());
-            // var textRightEdge:Number = addressField.width + addressField.x;
-            // if (textRightEdge > maxInputFieldTextPosition)
-            // {
-            //     //addressField.width = maxInputFieldTextPosition - addressField.x;// use right alignment for this
-            //     addressField.scrollH = textRightEdge - maxInputFieldTextPosition;
-            //     Main.debugLogAP.print("attempted to scroll. addressField.scrollH: " + addressField.scrollH.toString())
-            // }
-
-            // https://stackoverflow.com/a/5097770 (no code just a text reply basically)
-            // welp...
-            // that post is from 2011 but yeah no I think it's still accurate. guess I just have to make it myself.
-            // THINGS TO LISTEN FOR:
-            // - mousewheel scrolling up and down, maybe up/down arrow keys to jump to the far left or far right (directly scroll up/down)
-            // - left/right arrow keys, and mouse clicks (use the caret position and selectionBeginIndex/selectionEndIndex to decide if we should scroll)
-            // ==> for selectionBeginIndex/selectionEndIndex I might need to store what they were previously and use the change to detect what direction the user
-            //     9s selecting in. ideally the caret position could just tell me that information depending on which end it is at but IDK if that works. I'll have to test.
-            // ok yeah it really shouldn't be that hard to implement. hopefully. I really don't want to delay these PRs even more...
-            Main.debugLogAP.print("caretIndex: " + addressField.caretIndex.toString());
-            Main.debugLogAP.print("selectionBeginIndex: " + addressField.selectionBeginIndex.toString());
-            Main.debugLogAP.print("selectionEndIndex: " + addressField.selectionEndIndex.toString());
         }
 
         public function onConnectionButtonPressed(e:MouseEvent):void
