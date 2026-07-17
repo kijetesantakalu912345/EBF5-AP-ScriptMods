@@ -8,7 +8,6 @@ package archipelago
     import flash.text.TextFieldAutoSize;
     import flash.events.*;
 
-    // THIS UI NEEDS MORE POLISH BEFORE IT SHOULD SHIP!
     public class APConnectUI extends flash.display.Sprite implements IOnConnectHandler, IOnNotConnectedHandler
     {
         public static var CONNECT_TEXT:String = "Connect";
@@ -20,8 +19,8 @@ package archipelago
         private var addressFieldLabel:TextField;
         private var connectionButton:APTextButton; // contextually "Connect"/"Disconnect"/'waiting to connect'
         
-        //private var hasInitializedPosition:Boolean = false;
-
+        // POSSIBLE(?) TODO: make sure the event listeners that this UI creates (including ones created by other classes that this UI uses) get destroyed if a teardown()
+        // function gets added for this. This UI will probably be off most of the time and we'd probably prefer to not have this as just a constant memory sink.
         public function APConnectUI(apSocket:APSocket)
         {
             super();
