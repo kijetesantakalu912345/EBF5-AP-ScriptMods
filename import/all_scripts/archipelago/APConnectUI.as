@@ -58,7 +58,8 @@ package archipelago
             addressField.type = TextFieldType.INPUT;
             addressField.setTextFormat(textFormat);
             addressField.defaultTextFormat = textFormat;
-            addressField.appendText("localhost:4999"); // 4999 is just some random port number that according to wikipedia's list of TCP and UDP port numbers doesn't seem to have much usage.
+            // 4999 is just some random port number that according to wikipedia's list of TCP and UDP port numbers doesn't seem to have much usage.
+            addressField.appendText("localhost:4999");
             addressField.x = addressFieldLabel.width + 8; // +x pixels of padding
             addressField.y = uiLine2Position;
             addressField.border = true;
@@ -81,15 +82,14 @@ package archipelago
 
         public function onConnectionButtonPressed(e:MouseEvent):void
         {
+            // Eventually this UI needs a 'status' textfield so that we aren't just printing these messages to the debug log.
+            // I'll add that soon.
             if (!linkedApSocket.connected)
             {
                 Main.debugLogAP.print("trying to connect.");
-                // removing trailing or beginning whitespace would also be a good idea. though again that's polish.
                 var splitString:Array = addressField.text.split(":");
                 if (splitString.length != 2 || (splitString.length == 2 && (splitString[0] == "" || splitString[1] == "")))
                 {
-                    // we probably need to add a "status" textfield to this UI, or at least a place to specify messages like this other than the debug log.
-                    // that's polish though, right now I just want to get it working.
                     Main.debugLogAP.print("Enter an address in the format of `address:port`.");
                     return;
                 }

@@ -12,7 +12,7 @@ package archipelago
      * `setMaxViewWidth()` must be used at least once after the first time the text is set.
      * `setMaxViewWidth()` calls `updateScrollRectHeight()`.
      */
-    public class APLineEdit extends flash.text.TextField //implements IMainLoopHandler
+    public class APLineEdit extends flash.text.TextField
     {
         public var scrollDeltaMultiplier:uint = 2;
         private var oldCaretIndex:int = 0;
@@ -25,17 +25,13 @@ package archipelago
             super();
             rightEdgeBorderPadding = borderPaddingPx;
             this.type = TextFieldType.INPUT;
-            // THINGS TO LISTEN FOR:
-            // - mousewheel scrolling up and down, maybe up/down arrow keys to jump to the far left or far right (directly scroll up/down)
-            // - left/right arrow keys, and mouse clicks (use the caret position and selectionBeginIndex/selectionEndIndex to decide if we should scroll)
-            // ==> for selectionBeginIndex/selectionEndIndex I might need to store what they were previously and use the change to detect what direction the user
-            //     is selecting in. ideally the caret position could just tell me that information depending on which end it is at but IDK if that works. I'll have to test.
             this.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheelScroll);
-            //this.addEventListener(Event.CHANGE, onCaretPositionPoll);
-            //this.addEventListener(KeyboardEvent.KEY_DOWN, onCaretPositionPoll);
+            // POSSIBLE IMPROVEMENT: add a KEY_DOWN listener that, if the caret is already at the leftmost/rightmost position and the left/right arrow key is pressed,
+            // will call `scrollToStart()`/`scrollToEnd()`.
+            //this.addEventListener(KeyboardEvent.KEY_DOWN, );
+
             // we need to detect text input and caret position changes (there are no caret events unfortunately) after the textfield has been changed.
             this.addEventListener(Event.EXIT_FRAME, onCaretPositionPoll);
-            Main.debugLogAP.print("APLineEdit() finished.");
         }
         
         // NOTE FOR SCROLLING: you can't directly assign the properties of scrollRect. scrollRect always needs to be directly set to a `Rectangle` object.
@@ -53,7 +49,6 @@ package archipelago
                 return;
             }
 
-            var newRect:Rectangle = scrollRect;
             var charRect:Rectangle = null;
             var farX:Number = null;
 
@@ -61,33 +56,14 @@ package archipelago
             {
                 charRect = getCharBoundaries(caretIndex);
                 farX = charRect.x + charRect.width;
-
-                Main.debugLogAP.print("farX: " + farX.toString() + " charRect.x: " + charRect.x.toString() + " charRect.width: " + charRect.width.toString() + " this.x: " + this.x + " newRect.x: " + newRect.x.toString() + " newRect.width: " + newRect.width.toString()
-                + " newRect.x + newRect.width: " + (newRect.x + newRect.width).toString())
             }
 
             if (!(caretIndex == 0 || caretIndex == text.length)) // if the caret is not at the very start or very end of the text.
             {
+                var newRect:Rectangle = scrollRect;
                 if (farX > newRect.x + newRect.width)
                 {
-                    Main.debugLogAP.print("farX > newRect.x + newRect.width");
-                    newRect.x += charRect.width;
-                }
-                if (charRect.x < newRect.x)
-                {
-                    Main.debugLogAP.print("farX < newRect.x");
-                    newRect.x = charRect.x;
-                }
-                // checking again to see if we need to jump to see the character after scrolling by the character width feels a lot nicer for text input.
-                if (farX > newRect.x + newRect.width)
-                {
-                    Main.debugLogAP.print("farX - (newRect.x + newRect.width): " + (farX - newRect.x + newRect.width).toString() + " farX:" + farX.toString() + " newRect.x: " + newRect.x.toString() + " newRect.width: " + newRect.width.toString())
                     newRect.x += farX - (newRect.x + newRect.width);
-                    /*if (checkCanNotScrollRight(newRect))
-                    {
-                        newRect = scrollToEnd();
-                        Main.debugLogAP.print("scrolling to end.");
-                    }*/
                 }
                 if (charRect.x < newRect.x)
                 {
@@ -108,7 +84,6 @@ package archipelago
             }
             oldTextLength = text.length;
             oldCaretIndex = caretIndex;
-            //Main.debugLogAP.print("onCaretPositionPoll finished. scrollRect.x: " + scrollRect.x.toString());
         }
 
         public function onMouseWheelScroll(e:MouseEvent):void
@@ -177,8 +152,6 @@ package archipelago
             var newRect:Rectangle = scrollRect;
             newRect.height = maxHeight;
             scrollRect = newRect;
-            //scrollRect = new Rectangle(0, 0, maxViewWidth, maxHeight);
-            Main.debugLogAP.print(scrollRect.toString())
         }
 
         public function setMaxViewWidth(maxViewWidth_:uint):void
