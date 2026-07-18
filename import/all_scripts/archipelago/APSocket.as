@@ -16,8 +16,8 @@ package archipelago
       public var onUTF8MessageReceivedCallbackHandlers:Array = [];
       public var onJSONMessageReceivedCallbackHandlers:Array = [];
       // It feels overkill to add interfaces for these two... I guess I will because we have them for everything else too but it feels kinda silly at this point.
-      public var onConnectCallbackHandlers:Array = [];
-      public var onNotconnectedCallbackHandlers:Array = [];
+      public var onConnectedCallbackHandlers:Array = [];
+      public var onNotConnectedCallbackHandlers:Array = [];
 
       public var isWaitingForNewMessage:Boolean = true;
       public var currentMessageFinalLength:uint = 0;
@@ -62,22 +62,23 @@ package archipelago
          isWaitingForNewMessage = true;
          currentReceivedMessageFragments = new ByteArray();
          currentMessageFinalLength = 0;
+         
+         for each (var disconnectCallbackHandler:IOnNotConnectedHandler in onNotConnectedCallbackHandlers)
+         {
+            disconnectCallbackHandler.onNotConnected();
+         }
       }
 
       private function closeHandler(event:Event):void
       {
          onSocketClosed()
-         for each (var disconnectCallbackHandler:IOnNotConnectedHandler in onNotconnectedCallbackHandlers)
-         {
-            disconnectCallbackHandler.onNotConnected();
-         }
       }
 
       private function connectHandler(event:Event):void
       {
          Main.debugLogAP.print("socket connected!");
          receivedDisconnectSoonNotice = false;
-         for each (var connectCallbackHandler:IOnConnectHandler in onNotconnectedCallbackHandlers)
+         for each (var connectCallbackHandler:IOnConnectHandler in onConnectedCallbackHandlers)
          {
             connectCallbackHandler.onConnect();
          }
@@ -113,7 +114,7 @@ package archipelago
          // and currently idk what port we'll use for game to client communication.
          Main.debugLogAP.print("If you're running EBF5 in a browser, then unfortunately playing the mod this way is unimplemented. You'll have to run it in one of the ways listed above.");
          Main.debugLogAP.print("Error message: " + event.text);
-         for each (var disconnectCallbackHandler:IOnNotConnectedHandler in onNotconnectedCallbackHandlers)
+         for each (var disconnectCallbackHandler:IOnNotConnectedHandler in onNotConnectedCallbackHandlers)
          {
             disconnectCallbackHandler.onNotConnected();
          }

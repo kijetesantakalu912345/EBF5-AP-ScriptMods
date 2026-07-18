@@ -26,8 +26,8 @@ package archipelago
             super();
             //addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
             linkedApSocket = apSocket;
-            linkedApSocket.onConnectCallbackHandlers.push(this);
-            linkedApSocket.onNotconnectedCallbackHandlers.push(this);
+            linkedApSocket.onConnectedCallbackHandlers.push(this);
+            linkedApSocket.onNotConnectedCallbackHandlers.push(this);
             var textFormat:TextFormat = new TextFormat();
             textFormat.font = "Verdana";
             textFormat.size = 24;
